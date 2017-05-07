@@ -2,38 +2,35 @@
 module Enumerable
 
   def my_each
-    if block_given?
+    return self.to_enum(:my_each) unless block_given?
       i = 0
       while i < self.size
         yield(self[i])
         i+=1
       end
-      self
-    end
+    return self
   end
 
 
   def my_each_with_index
-    if block_given?
-      i = 0
-      self.my_each do |x|
-        yield(x,i)
-        i+=1
-      end
-      self
+    return self.to_enum(:my_each_with_index) unless block_given?
+    i = 0
+    self.my_each do |x|
+      yield(x,i)
+      i+=1
     end
+    return self
   end
   
   def my_select
-    if block_given?
-      a = []
-      self.my_each do |x|
-        if yield(x)
-          a << x
-        end
+    return self.to_enum(:my_select) unless block_given?
+    a = []
+    self.my_each do |x|
+      if yield(x)
+        a << x
       end
-      a
     end
+    return a
   end
 
   def my_all?
@@ -82,12 +79,14 @@ module Enumerable
 
 
   def my_map
-    if block_given?
+    if block_given? || proc
       a = []
       self.my_each do |x|
           a << yield(x)
       end
       a
+    else
+      return self.to_enum(:my_select)
     end
   end
 
